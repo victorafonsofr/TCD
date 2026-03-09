@@ -31,30 +31,19 @@ void bubbleSort(int a[],int n)
         m--;
     }
 }
-void insertSort(int vetor[],int size)
+void insertSort(int v[],int n)
 {
-    int aux,j;
-    for(int i=1;i<size-1;i++)
+    int aux,j; // variavel auxiliar para troca 
+    for(int i=1;i<n;i++)//controla o indice do vetor, o qual esta sendo ordenado
     {
-        if(vetor[i]<vetor[i-1])
+        int key=v[i]; // variavel que esta sendo ordenada é a key
+        int j=i-1;  // variavel j para rodar pelo vetor fazendo comparacoes
+        while(j>=0 && v[j]>key) // condicao para j ser um indice do vetor e o numero sendo comparado tem que ser maior do qual a gente esta ordenando
         {
-            aux = vetor[i];
-            vetor[i] = vetor[i-1];
-            j = i - 1;
-            while(j>=0)
-            {
-                if(aux<vetor[j])
-                {
-                    vetor[j+1] = vetor[j];
-                    vetor[j] = aux;
-                }
-                else
-                {
-                    break;
-                }
-                j = j - 1;
-            }
+            v[j+1]=v[j]; // copia a variavel para a da frente  
+            j--; // se copiou no da frente o indice do vetor volta comparando com os de tras
         }
+        v[j+1]=key; // saiu da condicao while entao achou o menor e colocou na posicao que esta sendo ordenado
     }
 }
 

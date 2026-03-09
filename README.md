@@ -8,4 +8,6 @@ utilize os seguintes comandos:
 1. gcc -I include/ main.c .\functions\mainf.c .\functions\buscaf.c .\functions\ordenaf.c -o .\output\tcd
 2. .\output\tcd.exe
 
-(Linux) //em breve
+(Linux) 
+1. gcc -I include/ main.c functions/mainf.c functions/buscaf.c functions/ordenaf.c -o output/tcd
+2. ./output/tcd

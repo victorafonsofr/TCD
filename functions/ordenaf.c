@@ -1,34 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void troca(int a[], int x,int y)
+void troca(int a[], int x,int y) // funcao para trocar os elementos
 {
-    int w;
-    w=a[x];
-    a[x]=a[y];
-    a[y]=w;
+    int w; // declara uma variavel auxiliar
+    w=a[x];// ela pega o valor de a[x]
+    a[x]=a[y];// a[x] pega o valor de a[y]
+    a[y]=w;// a[y] pega o valor de a[x]
 }
 void bubbleSort(int a[],int n)
 {
-     int contador = 1;
-    int m=n;
+     int contador = 1; // contador para otimizar o codigo, =1 pois nao deve cair no if na primeira vez que entrar no laço
+    int m=n-1; // variavel do tamanho do vetor, e menor que 1 para quando comparar como o da frente nao sair do vetor
     for(int j=0;j<n;j++)
     {
-        if(contador==0)
+        if(contador==0)// se o contador for 0 é pq nao fez nenhuma troca , entao esta ordenado
         {
-            break;
+            break;// se esta ordenado deve sair do codigo
         }
-        contador = 0;
+        contador = 0;//define ele para 0 toda vez que for fazer uma varredura inteira no vetor
         for(int i=0;i<m;i++)
         {
-            if(a[i]>a[i+1])
+            if(a[i]>a[i+1])// se for maior do que o da frente troca de lugar
             {
-                troca(a,i,i+1);
-                contador++;
+                troca(a,i,i+1);//troca
+                contador++;// registra que ouve uma troca
             }
         
         }
-        m--;
+        m--;// o ultimo elemento ja esta ordenado entao nao deve compara-lo com os outros
     }
 }
 void insertSort(int vetor[],int size)

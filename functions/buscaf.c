@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int ordenado(int vetor[],int size)
 {
     for(int i=0 ; i < (size-1) ; i++) //laço nao chega no ultimo elemento do vetor, pois se ele chegar ao ultimo e comparar com o proximo entrará em uma memoria que nao eh minha

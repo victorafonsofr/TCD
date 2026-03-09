@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 
 
 
@@ -21,7 +22,15 @@ int main()
     char arq[50]; // nome do arquivo
     int resultado;
     int opcao = 0, subop = 0;//arquivo a ser carregado
-    int cont = 0; //conta quantas vezes um algoritmo foi executado
+    int contAlg = 0; //conta quantas vezes um algoritmo foi executado
+    
+    //implementar vetor de doubles para armazenar varios tempos de execução.
+    LARGE_INTEGER frequency;
+    LARGE_INTEGER inicio,fim;
+    double elapsedtime;
+
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&inicio);
 
 
     while (opcao!=5)
@@ -75,53 +84,53 @@ int main()
                     printf("Qual elemento voce deseja procurar?\n"); // escolha do que buscar
                     scanf("%d",&elemento);
 
-                switch(subop)
-                {
-                    case 1: // usar a busca linear
-                
-                        resultado = buscaLinear(vet,elemento,tam); //resultado da busca
+                    switch(subop)
+                    {
+                        case 1: // usar a busca linear
+                    
+                            resultado = buscaLinear(vet,elemento,tam); //resultado da busca
+                            
+                            switch(resultado)
+                            {
+                                case -1:  // funcao retorna -1 caso o numero nao fora achado                           
+                                    printf("Esse numero nao esta no array!\n");
+                                    break;                           
+                                default :// retornou um positivo, ou seja, a posicao dele no vetor                           
+                                    printf("O numero esta na posicao %d do vetor\n",resultado+1);
+                                    contAlg++;
+                                    break;                                
+                            }
+                            break;
                         
-                        switch(resultado)
-                        {
-                            case -1:  // funcao retorna -1 caso o numero nao fora achado                           
-                                printf("Esse numero nao esta no array!\n");
-                                break;                           
-                            default :// retornou um positivo, ou seja, a posicao dele no vetor                           
-                                printf("O numero esta na posicao %d do vetor\n",resultado+1);
-                                cont++;
-                                break;                                
-                        }
-                        break;
-                    
-                    case 2: // usar a busca binaria
-                    
-                        resultado = buscaBin(vet,elemento,tam); //realiza a busca binaria
-                        switch(resultado)
-                        { 
-                            case -2: // funcao retorna -2 caso o array nao esteja ordenado
-                            
-                                printf("array nao ordenado!\n");
-                                break;                           
-                            
-                            case -1:// funcao retorna -1 caso o valor nao esteja                           
+                        case 2: // usar a busca binaria
+                        
+                            resultado = buscaBin(vet,elemento,tam); //realiza a busca binaria
+                            switch(resultado)
+                            { 
+                                case -2: // funcao retorna -2 caso o array nao esteja ordenado
                                 
-                                printf("Valor nao encontrado no array\n");
-                                break;                                                    
+                                    printf("array nao ordenado!\n");
+                                    break;                           
+                                
+                                case -1:// funcao retorna -1 caso o valor nao esteja                           
+                                    
+                                    printf("Valor nao encontrado no array\n");
+                                    break;                                                    
+                                
+                                default:// ultima opcao de retorno da função, um numero positivo, ou seja, a posicao no vetor
+                                
+                                    printf("Valor na posicao %d do vetor\n",resultado+1);   
+                                    contAlg++;
+                                    break;   
+                                
+                            }
+                            break;
                             
-                            default:// ultima opcao de retorno da função, um numero positivo, ou seja, a posicao no vetor
                             
-                                printf("Valor na posicao %d do vetor\n",resultado+1);   
-                                cont++;
-                                break;   
-                            
-                        }
-                        break;
-                        
-                        
-                    default :                   
-                        printf("Opcao inexistente\n");
-                        break;              
-                }
+                        default :                   
+                            printf("Opcao inexistente\n");
+                            break;              
+                    }
                 }
 
             case 3:
@@ -140,21 +149,21 @@ int main()
                     
                     insertSort(vet,tam-1);
                     printf("Vetor ordenado por Insert Sort!\n");
-                    cont++;
+                    contAlg++;
 
                     break;
                 case 2: //Bubble
 
                     bubbleSort(vet,tam-1);
                     printf("Vetor ordenado por Bubble Sort!\n");
-                    cont++;
+                    contAlg++;
 
                     break;
                 case 3: //Selection
 
                     selectionSort(vet,tam-1);
                     printf("Vetor ordenado por Selection Sort!\n");
-                    cont++;
+                    contAlg++;
                     
                     break;
                 case 4: //Merge
@@ -176,18 +185,11 @@ int main()
             
             case 4:
                 
-                if(cont!=0){//esta opcao so pode ser executada se algum algoritmo for executado anteriormente.
-               
-                    log = fopen("log.txt","w");
+                if(contAlg>0){//esta opcao so pode ser executada se algum algoritmo for executado anteriormente.
+                    log = fopen("log.txt","w");//criar arquivo de log
+                    fprintf(log, "arquivo log: \n");
 
 
-                    #ifdef _WIN32 //descobre qual OS a maquina está para executar certo algoritmo
-                    
-                    #elif __linux__
-
-                    #endif
-
-                    fprintf(log, "arquivo log\n");
 
                 }else{
 

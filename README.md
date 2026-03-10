@@ -5,7 +5,7 @@ Trabalho de conclusão de disciplina: Algoritmos II
 utilize os seguintes comandos:
 
 (Windows)
-1. gcc -I include/ main.c .\functions\mainf.c .\functions\buscaf.c .\functions\ordenaf.c -o .\output\tcd
+1. gcc -O3 -march=native -fopenmp -I include/ main.c .\functions\mainf.c .\functions\buscaf.c .\functions\ordenaf.c -o .\output\tcd
 2. .\output\tcd.exe
 3. Ao executar o programa, voce deve utilizar a opção 1 para carregar um arquivo
 4. Temos algumas opçoes de nome de arquivos, todos os arquivos sao baseados no padrão: arquivosTeste/< nome >_< numero >.txt . Opçoes de nome: crescente, decrescente e desordenado . Opções de número: 1000, 10000, 100000 e 1000000

@@ -14,4 +14,17 @@ utilize os seguintes comandos:
 7. Após isso utilize a opção 4 para gerar um log
 8. Utilize a opção 5 para sair
 
+(OBSERVAÇÃO)
+
+Necessário instalar threads no MinGW:
+  pacotes:
+          - mingw32-libpthread-old.dll
+          - mingw32-libpthreadgc.dev
+          - mingw32-libpthreadgc.dll
+          - mingw32-libpthreadgce.dev
+          - mingw32-libpthreadgce.dll
+          - mingw32-pthreads-w32.dev
+          - mingw32-pthreads-w32.doc
+          - mingw32-pthreads-w32.dev
+
 (Observação) - programa não disponível para distribuições Linux

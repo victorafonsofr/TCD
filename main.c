@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <omp.h>
 #include <windows.h>
 
 
@@ -24,7 +25,6 @@ int main()
     int contAlg = 0; //conta quantas vezes um algoritmo foi executado e além disso serve como índice para o vetLog
     double *vetLog = (double *) malloc((contAlg+1) * sizeof(double)); //vetor para armazenar os tempos de execução de cada arquivo
     
-    //implementar vetor de doubles para armazenar varios tempos de execução.
     LARGE_INTEGER frequency;
     LARGE_INTEGER inicio,fim;
     double elapsedtime;
@@ -106,7 +106,7 @@ int main()
                                     printf("O numero esta na posicao %d do vetor\n",resultado+1);
                                 
                                     vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
-                                    printf(" %2d - Time: %.16lf ms\n", contAlg, vetLog[contAlg]);
+                            
                                     contAlg++;
 
                                     vetLog = (double *) realloc(vetLog, (contAlg+1)*sizeof(double));
@@ -227,8 +227,19 @@ int main()
                         vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
 
                         break;
-                    case 6: //algoritmo adicional - introSort
-                        /* code */
+                    case 6: //algoritmo adicional - SinistroSort
+
+                        
+
+                        QueryPerformanceCounter(&inicio);
+                        introsort(vet,tam-1);
+                        QueryPerformanceCounter(&fim);
+
+                        printf("Vetor ordenado por Sinistro Sort\n");
+                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                        contAlg++;
+                        vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
+
                         break;
                     
                     default:
@@ -245,7 +256,7 @@ int main()
                     fprintf(log, "arquivo log: \n");
 
                     for(int k = 0; k < contAlg; k++){
-                        fprintf(log,"%2d - Time: %.16lf ms\n", k, vetLog[k]);
+                        fprintf(log,"%2d - Time: %.9lf ms\n", k, vetLog[k]);
                     }
 
                     fclose(log);

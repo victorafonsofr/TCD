@@ -14,6 +14,6 @@ void submenu2(){
 
 void submenu3(){
 
-    printf("1. Insert\n2. Bubble\n3. Selection\n4. Merge\n5. Quick\n6. EXTRA(EM DESENVOLVIMENTO)\n");
+    printf("1. Insert\n2. Bubble\n3. Selection\n4. Merge\n5. Quick\n6. Sinistro\n");
 
 }

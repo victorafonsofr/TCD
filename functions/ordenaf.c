@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <omp.h>
 
 void troca(int a[], int x,int y)
 {
@@ -122,20 +124,21 @@ void mergeSort(int v[],int p,int q)
     }
 }
 
-int particiona (int*v, int inicio, int fim)
+int particiona (int*v, int inicio, int fim)// organiza os elementos em torno de um pivo
 {
-    int pivo= (v[inicio] + v[fim] + v[(inicio + fim) / 2]) / 3;
+    int pivo= (v[inicio] + v[fim] + v[(inicio + fim) / 2]) / 3; // Calcula o pivo como a media aritmetica entre o primeiro, o último e o elemento central , determina um valor medio, facilitando nas divisoes
     while(inicio<fim)
     {
-        while(inicio < fim && v[inicio] <= pivo)
+        while(inicio < fim && v[inicio] <= pivo)// Move 'inicio' para a direita enquanto o valor for menor ou igual ao pivo e pula quem esta do lado certo
+        
         {
             inicio++;
         }
-        while(inicio<fim && v[fim]>pivo)
+        while(inicio<fim && v[fim]>pivo) // Move 'fim' para a esquerda enquanto o valor for maior que o pivo
         {
             fim--;
         }
-        int aux= v[inicio];
+        int aux= v[inicio];// inicio e fim trocam de valores 
         v[inicio] =v[fim];
         v[fim]= aux;
     }
@@ -146,8 +149,130 @@ void quickSort(int *v, int inicio, int fim)
 {
     if(inicio<fim)
     {
-       int pos= particiona(v, inicio, fim);
-       quickSort(v,inicio , pos-1);
-       quickSort(v,pos,fim);
+       int pos= particiona(v, inicio, fim);// 'pos' recebe o indice onde o vetor foi particionado
+       quickSort(v,inicio , pos-1);//  elementos menores que o pivô (a esquerda)
+       quickSort(v,pos,fim);// elementos maiores que o pivo (a direita)
     }    
+}
+static inline void troca2(int *a, int *b) { //função de troca otimizada, static usado para evitar confusão se tiver outra troca, inline para o processador não ficar tendo saltas quando a função for chamada procurando a função na memoria então copiando a penas o conteudo da função
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+static inline int mediana(int *a, int *b, int *c) { // pegar o pivo mais equilibrado
+    if (*a < *b) {
+        if (*b < *c) return *b;
+        return (*a < *c) ? *c : *a;
+    } else {
+        if (*a < *c) return *a;
+        return (*b < *c) ? *c : *b;
+    }
+}
+
+void insertion_sort(int *inicio, int *fim) { //insertion sort com ponteiros
+    for (int *i = inicio + 1; i <= fim; i++) { // for para ler o vetor
+        int valor = *i; //valor para ser inserido
+        int *j = i - 1; //aponta para o proximo elemento anterior
+        while (j >= inicio && *j > valor) { //comparação para troca
+            *(j + 1) = *j; //sobreposição do maior elemneto para direita
+            j--; //voltar para verificar o proximo elemento a esquerda
+        }
+        *(j + 1) = valor; // insere o valor na posição
+    }
+}
+
+void heapify(int *dados, int tamanho, int pai) {
+    int maior = pai; //assumir que o maior valor é do pai
+    int filho_esq = 2 * pai + 1; //calcular os filho a esquerda
+    int filho_dir = 2 * pai + 2; //calcular os filho a direita
+    
+    // Se o filho da esquerda existir e for maior que o atual maior
+    if (filho_esq < tamanho && *(dados + filho_esq) > *(dados + maior)) {
+        maior = filho_esq;
+    }
+    
+    // Se o filho da direita existir e for maior que o atual maior
+    if (filho_dir < tamanho && *(dados + filho_dir) > *(dados + maior)) {
+        maior = filho_dir;
+    }
+    
+    // se o maior não for o pai trocacom os filhos
+    if (maior != pai) {
+        troca2(dados + pai, dados + maior);
+        heapify(dados, tamanho, maior); // chamada recursiva para fazer esse processo
+    }
+}
+
+void heap_sort(int *base, int tamanho) {
+    //organizar elemnos em forma de arvore binaria
+    for (int i = tamanho / 2 - 1; i >= 0; i--) {
+        heapify(base, tamanho, i);
+    }
+    
+    //pegar elementos um a um da arvore
+    for (int i = tamanho - 1; i > 0; i--) {
+        troca2(base, base + i); // coloca a raiz para o final da arvore
+        heapify(base, i, 0); // reconstroi o heap com elementos restantes
+    }
+}
+
+static inline int* particiona2(int *inicio, int *fim) { //trocas e pivo do quick sort
+    int *meio = inicio + (fim - inicio) / 2;
+    int pivo = mediana(inicio, meio, fim); //escolhe o pivo
+    
+    int *i = inicio - 1; 
+    int *j = fim + 1; // coloca um ponteiro no começo e no final horae
+    
+    while (1) {
+        do { i++; } while (*i < pivo); // avança com i quando tiver numeros menores que o pivo
+        do { j--; } while (*j > pivo); // recua o j com valores maiores que o pivo
+        
+        if (i >= j) return j; // se cruzarem houve, termina os avanços
+        
+        troca2(i, j); // troca elementos para ficar a esquerda menores que o pivo e a direita maiores
+    }
+}
+
+#define LIMITE_THREADS 10000 
+
+void introsort_recursivo(int *inicio, int *fim, int profundidade) {
+    while (fim - inicio > 16) { // usar o quick para tamanhos maiores que 16
+        if (profundidade == 0) { // quando a pronfudidade chegar a 0 chama o heap
+            heap_sort(inicio, (int)(fim - inicio + 1)); // heap sort
+            return;
+        }
+        profundidade--; //diminui a profundidade
+        
+        int *p = particiona2(inicio, fim); //divide o vetor
+        
+        if (fim - inicio > LIMITE_THREADS) { // joga pra outra thread se for muito grande
+            #pragma omp task shared(inicio, p)
+            introsort_recursivo(inicio, p, profundidade); // recursão para o lado esquerdo
+            inicio = p + 1; // continua na thread atual pro lado direiro
+        } else {
+            if (p - inicio < fim - (p + 1)) {
+                introsort_recursivo(inicio, p, profundidade);
+                inicio = p + 1;
+            } else {
+                introsort_recursivo(p + 1, fim, profundidade);
+                fim = p;
+            }
+        }
+    }
+    
+    if (inicio < fim) {
+        insertion_sort(inicio, fim); // roda o insertion em valores pequenos no final
+    }
+}
+
+void introsort(int *vetor, int tamanho) {
+    if (tamanho < 2) return; //caso tenha so dois elementos ja esta ordenado
+    int profundidade_maxima = 2 * (int)log2((double)tamanho); //limite maximo para não chegar a n2
+    
+    #pragma omp parallel if(tamanho > 50000) // so usa threads se o vetor for grande
+    {
+        #pragma omp single
+        introsort_recursivo(vetor, vetor + tamanho - 1, profundidade_maxima); //roda quick e heap sort
+    }
 }

@@ -1,0 +1,2 @@
+arquivo log: 
+ 0 - Time: 29.408800000 ms

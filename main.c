@@ -12,6 +12,11 @@
 
 int main()
 {
+    typedef struct{
+        char tipo_algoritimo[25];
+        double temp;
+        char hora[15];
+    } LogVet;
 
     FILE *fp = NULL; // arquivo nao aberto ainda
     FILE *log = NULL; //arquivo de log
@@ -22,12 +27,17 @@ int main()
     char arq[50]; // nome do arquivo
     int resultado;
     int opcao = 0, subop = 0;//arquivo a ser carregado
-    int contAlg = 0; //conta quantas vezes um algoritmo foi executado e além disso serve como índice para o vetLog
-    double *vetLog = (double *) malloc((contAlg+1) * sizeof(double)); //vetor para armazenar os tempos de execução de cada arquivo
+    int contAlg = 0; //conta quantas vezes um algoriinfo_tempoo foi executado e além disso serve como índice para o vetLog
+    int cont_logs = 0;
+    LogVet *vetLog = (LogVet *) malloc((contAlg+1) * sizeof(LogVet)); //vetor para armazenar os tempos de execução de cada arquivo
     
+
     LARGE_INTEGER frequency;
     LARGE_INTEGER inicio,fim;
     double elapsedtime;
+
+    time_t hora_atual; 
+    struct tm info_tempo ;
 
     QueryPerformanceFrequency(&frequency);
     
@@ -51,6 +61,7 @@ int main()
                 if (fp != NULL) fclose(fp); // Fecha anterior se existir
                 if (vet != NULL) free(vet); // Limpa memória anterior
 
+                tam = 1; 
                 vet=(int*)malloc(tam*sizeof(int));
 
                 printf("Insira o nome do arquivo:\n ");
@@ -74,8 +85,7 @@ int main()
                     tam++; // aumentar o tamanho
                     vet = (int*)realloc(vet,tam*sizeof(int));
                 }
-                tam = i; //corrigido o tamanho do vetor
-
+                tam=i;
                 vet = (int*) realloc(vet,tam*sizeof(int));//reajustar o tamanho para nao sobrar nada
                 break;
 
@@ -106,12 +116,15 @@ int main()
                                     break;                            
                                 default :// retornou um positivo, ou seja, a posicao dele no vetor                           
                                     printf("O numero esta na posicao %d do vetor\n",resultado+1);
-                                
-                                    vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                                    hora_atual  = time(NULL);
+                                    info_tempo = *localtime(&hora_atual);
+                                    sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                                    strcpy(vetLog[contAlg].tipo_algoritimo, "busca linear");
+                                    vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                             
                                     contAlg++;
 
-                                    vetLog = (double *) realloc(vetLog, (contAlg+1)*sizeof(double));
+                                    vetLog = (LogVet *) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
                                     break;                                
                             }
@@ -136,10 +149,14 @@ int main()
                                 
                                 default:// ultima opcao de retorno da função, um numero positivo, ou seja, a posicao no vetor
                                 
-                                    printf("Valor na posicao %d do vetor\n",resultado+1);   
-                                    vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                                    printf("Valor na posicao %d do vetor\n",resultado+1);
+                                    hora_atual  = time(NULL);
+                                    info_tempo = *localtime(&hora_atual);
+                                    sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);  
+                                    strcpy(vetLog[contAlg].tipo_algoritimo, "Busca binaria");
+                                    vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                                     contAlg++;
-                                    vetLog = (double *) realloc(vetLog, (contAlg+1)*sizeof(double));
+                                    vetLog = (LogVet *) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
                                     break;   
                                 
@@ -158,7 +175,7 @@ int main()
                 if(fp == NULL) // nao abriu o arquivo
                 {    
                     printf("Erro ao abrir arquivo, carregue a opcao 1 e tente novamente.\n");
-                    break; //erro na apresentação;
+                    break;
                 }
 
                 submenu3();
@@ -170,78 +187,104 @@ int main()
                         QueryPerformanceCounter(&inicio);
                         insertSort(vet,tam);
                         QueryPerformanceCounter(&fim);
+
                         printf("Vetor ordenado por Insert Sort!\n");
-                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                        hora_atual  = time(NULL);
+                        info_tempo = *localtime(&hora_atual);
+                        sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                        strcpy(vetLog[contAlg].tipo_algoritimo, "Insert Sort: ");
+                        vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                         
                         contAlg++;
-                        vetLog = (double *) realloc(vetLog, (contAlg+1)*sizeof(double));
+                        vetLog = (LogVet *) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
 
                         break;
                     case 2: //Bubble
                         QueryPerformanceCounter(&inicio);
-                        bubbleSort(vet,tam);
+                        bubbleSort(vet,tam-1);
                         QueryPerformanceCounter(&fim);
-                        
+
                         printf("Vetor ordenado por Bubble Sort!\n");
-                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
-                        
+                        hora_atual  = time(NULL);
+                        info_tempo = *localtime(&hora_atual);
+                        sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                        strcpy(vetLog[contAlg].tipo_algoritimo, "Bubble Sort: ");
+                        vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+
                         contAlg++;
-                        vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
+                        vetLog = (LogVet*) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
 
                         break;
                     case 3: //Selection
                         QueryPerformanceCounter(&inicio);
-                        selectionSort(vet,tam);
+                        selectionSort(vet,tam-1);
                         QueryPerformanceCounter(&fim);
                         
                         printf("Vetor ordenado por Selection Sort!\n");
-                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                        hora_atual  = time(NULL);
+                        info_tempo = *localtime(&hora_atual);
+                        sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                        strcpy(vetLog[contAlg].tipo_algoritimo, "Selection Sort: ");
+                        vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
 
                         contAlg++;
-                        vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
+                        vetLog = (LogVet*) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
                         
                         break;
                     case 4: //Merge
                         QueryPerformanceCounter(&inicio);
-                        mergeSort(vet,0,tam);
+                        mergeSort(vet,0,tam-1);
                         QueryPerformanceCounter(&fim);
 
                         printf("Vetor ordenado por Merge Sort!\n");
-                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                        hora_atual  = time(NULL);
+                        info_tempo = *localtime(&hora_atual);
+                        sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                        strcpy(vetLog[contAlg].tipo_algoritimo, "Merge Sort: ");
+                        vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                         
                         contAlg++;
-                        vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
+                        vetLog = (LogVet*) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
 
                         break;
                     case 5: //Quick
                         
                         QueryPerformanceCounter(&inicio);
-                        quickSort(vet,0,tam);
+                        quickSort(vet,0,tam-1);
                         QueryPerformanceCounter(&fim);
 
                         printf("Vetor ordenado por Quick Sort!\n");
-                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                        hora_atual  = time(NULL);
+                        info_tempo = *localtime(&hora_atual);
+                        sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                        strcpy(vetLog[contAlg].tipo_algoritimo, "Quick Sort: ");
+                        vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                         contAlg++;
-                        vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
+                        vetLog = (LogVet*) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
                         break;
-                    case 6: //algoritmo adicional - SinistroSort
+                    case 6: //algoriinfo_tempoo adicional - SinistroSort
 
                         
+                        #pragma omp parallel 
+                        { }
 
                         QueryPerformanceCounter(&inicio);
                         introsort(vet,tam);
                         QueryPerformanceCounter(&fim);
-                        
+
                         printf("Vetor ordenado por Sinistro Sort\n");
-                            
-                        vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
+                        hora_atual  = time(NULL);
+                        info_tempo = *localtime(&hora_atual);
+                        sprintf(vetLog[contAlg].hora, "%02d:%02d:%02d", info_tempo.tm_hour, info_tempo.tm_min, info_tempo.tm_sec);
+                        strcpy(vetLog[contAlg].tipo_algoritimo, "Sinistro Sort: ");
+                        vetLog[contAlg].temp = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                         contAlg++;
-                        vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
+                        vetLog = (LogVet*) realloc(vetLog, (contAlg+1)*sizeof(LogVet));
 
                         break;
                     
@@ -254,19 +297,20 @@ int main()
             
             case 4:
                 
-                if(contAlg>0){//esta opcao so pode ser executada se algum algoritmo for executado anteriormente.
-                    log = fopen("log.txt","w");//criar arquivo de log
+                if(contAlg>cont_logs){//esta opcao so pode ser executada se algum algoriinfo_tempoo for executado anteriormente.
+                    log = fopen("log.txt","a");//criar arquivo de log
                     fprintf(log, "arquivo log: \n");
 
-                    for(int k = 0; k < contAlg; k++){
-                        fprintf(log,"%2d - Time: %.9lf ms\n", k, vetLog[k]);
+                    for(int k = cont_logs; k < contAlg; k++){
+                        fprintf(log,"[%s] %2d - %s - Time: %.9lf ms\n", vetLog[k].hora, k, vetLog[k].tipo_algoritimo, vetLog[k].temp);
                     }
 
                     fclose(log);
+                    cont_logs = contAlg;
                     printf("log gerado com sucesso!\n");
                 }else{
 
-                    printf("Para gerar algum log execute algum algoritmo antes!\n");
+                    printf("Para gerar algum log execute algum algoriinfo_tempoo antes!\n");
 
                 }
                 break;

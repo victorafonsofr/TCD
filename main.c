@@ -236,10 +236,7 @@ int main()
                         QueryPerformanceCounter(&inicio);
                         introsort(vet,tam);
                         QueryPerformanceCounter(&fim);
-                         for(int k = 0; k<tam; k++ ){
-                                printf("%d \n",vet[k]);
-                            }
-
+                        
                         printf("Vetor ordenado por Sinistro Sort\n");
                             
                         vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;

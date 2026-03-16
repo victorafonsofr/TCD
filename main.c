@@ -74,7 +74,9 @@ int main()
                     tam++; // aumentar o tamanho
                     vet = (int*)realloc(vet,tam*sizeof(int));
                 }
-                vet = (int*) realloc(vet,(tam-1)*sizeof(int));//reajustar o tamanho para nao sobrar nada
+                tam = i; //corrigido o tamanho do vetor
+
+                vet = (int*) realloc(vet,tam*sizeof(int));//reajustar o tamanho para nao sobrar nada
                 break;
 
             case 2:
@@ -156,6 +158,7 @@ int main()
                 if(fp == NULL) // nao abriu o arquivo
                 {    
                     printf("Erro ao abrir arquivo, carregue a opcao 1 e tente novamente.\n");
+                    break; //erro na apresentação;
                 }
 
                 submenu3();
@@ -165,9 +168,8 @@ int main()
                 {
                     case 1: //InsertSort
                         QueryPerformanceCounter(&inicio);
-                        insertSort(vet,tam-1);
+                        insertSort(vet,tam);
                         QueryPerformanceCounter(&fim);
-
                         printf("Vetor ordenado por Insert Sort!\n");
                         vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                         
@@ -178,12 +180,12 @@ int main()
                         break;
                     case 2: //Bubble
                         QueryPerformanceCounter(&inicio);
-                        bubbleSort(vet,tam-1);
+                        bubbleSort(vet,tam);
                         QueryPerformanceCounter(&fim);
-
+                        
                         printf("Vetor ordenado por Bubble Sort!\n");
                         vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
-
+                        
                         contAlg++;
                         vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));
 
@@ -191,7 +193,7 @@ int main()
                         break;
                     case 3: //Selection
                         QueryPerformanceCounter(&inicio);
-                        selectionSort(vet,tam-1);
+                        selectionSort(vet,tam);
                         QueryPerformanceCounter(&fim);
                         
                         printf("Vetor ordenado por Selection Sort!\n");
@@ -204,7 +206,7 @@ int main()
                         break;
                     case 4: //Merge
                         QueryPerformanceCounter(&inicio);
-                        mergeSort(vet,0,tam-1);
+                        mergeSort(vet,0,tam);
                         QueryPerformanceCounter(&fim);
 
                         printf("Vetor ordenado por Merge Sort!\n");
@@ -218,7 +220,7 @@ int main()
                     case 5: //Quick
                         
                         QueryPerformanceCounter(&inicio);
-                        quickSort(vet,0,tam-1);
+                        quickSort(vet,0,tam);
                         QueryPerformanceCounter(&fim);
 
                         printf("Vetor ordenado por Quick Sort!\n");
@@ -232,10 +234,14 @@ int main()
                         
 
                         QueryPerformanceCounter(&inicio);
-                        introsort(vet,tam-1);
+                        introsort(vet,tam);
                         QueryPerformanceCounter(&fim);
+                         for(int k = 0; k<tam; k++ ){
+                                printf("%d \n",vet[k]);
+                            }
 
                         printf("Vetor ordenado por Sinistro Sort\n");
+                            
                         vetLog[contAlg] = (fim.QuadPart - inicio.QuadPart) * 1000.0 / frequency.QuadPart;
                         contAlg++;
                         vetLog = (double*) realloc(vetLog, (contAlg+1)*sizeof(double));

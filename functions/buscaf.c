@@ -27,14 +27,16 @@ int buscaBin(int array[], int number, int size)
     {
         int esquerda = 0; // primeiro indice do array
         int direita = size-1; // ultimo indice do array
-        int meio = (esquerda + direita)/2; // meio do array
+
         while(esquerda<=direita) // se eles se igualarem ou inverterem é porque nao achou o numero
         {
+            int meio = (esquerda + direita)/2; // meio do array - correção pois o codigo estava em loop infinito por conta do meio continuar sempre o mesmo
+
             if(array[meio]==number)
             {
                 return meio; //retorna a posição que o numero esta
             }
-            if(array[meio]<number)
+            else if(array[meio]<number)
             {
                 esquerda = meio + 1; // muda o começo do vetor para o meio
             }
